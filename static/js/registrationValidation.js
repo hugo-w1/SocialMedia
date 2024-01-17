@@ -33,7 +33,6 @@ document.getElementById('password2').addEventListener('change', (e) => {
 
         e.target.classList.add('is-valid');
         document.getElementById('password').classList.add('is-valid');
-
     }
 })
 

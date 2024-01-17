@@ -28,6 +28,7 @@ export async function handlePath(req, res, pathSegments, db) {
             //Client not logged in
             res.writeHead(200, { 'Content-Type': 'text/html' });
             content = content.replace('%content%', '<h1>Not logged in</h1> <br> <a href="/login">Login</a> <a href="/register">Register</a> ');
+
             res.write(content);
             res.end();
             return;
@@ -38,13 +39,13 @@ export async function handlePath(req, res, pathSegments, db) {
             <h1>Welcome ${result.username}</h1>
             <br>
             <p>Your encrypted password is ${result.password}</p>
-            <br>
-            <form action="/logout" method="post">
-            <input type="submit" value="Logout">
-            </form>
             `);
 
             content = content.replace('%profile_picture%', result.profile_pic);
+
+            content = content.replace('%logout%', `<form action="/logout" method="post">
+            <input type="submit" value="Logout">
+            </form>`);
 
             res.write(content);
             res.end();
