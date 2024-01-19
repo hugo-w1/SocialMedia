@@ -4,6 +4,8 @@ import { handleRegistration } from "./registrationHandler.js";
 import { handleLogin } from "./loginHandler.js";
 import { handleLogout } from './logoutHandler.js';
 import { handleStatic } from './staticHandler.js';
+import { handleFriendList } from './friendListHandler.js';
+
 /**
  * 
  * @param {import 'http'.IncomingMessage} req 
@@ -69,6 +71,9 @@ export async function handlePath(req, res, pathSegments, db) {
             break;
         case 'static':
             handleStatic(req, res, pathSegments);
+            break;
+        case 'friends':
+            handleFriendList(req, res, db);
             break;
         default:
             //404
