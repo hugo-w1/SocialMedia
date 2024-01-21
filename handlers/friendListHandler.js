@@ -60,9 +60,19 @@ export async function handleFriendList(req, res, db, pathSegments, userDBFriends
                 //return full friend list
                 let friendsList = '';
 
+                //make add/remove friends buttons for the logged in user
                 friends.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a></li>`;
+                    if (element == result.username) {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a></li>`;
+                        return;
+                    }
+                    if (result.friends.includes(element)) {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove friend</button></li>`;
+                    } else {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add friend</button></li>`;
+                    }
                 });
+
                 content = content.replace('%content%', friendsList);
 
                 searchInfo = `${friends.length} friends`;
@@ -80,8 +90,17 @@ export async function handleFriendList(req, res, db, pathSegments, userDBFriends
                 let friendsList = '';
 
 
+                //make add/remove friends buttons for the logged in user
                 searchResult.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a></li>`;
+                    if (element == result.username) {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a></li>`;
+                        return;
+                    }
+                    if (result.friends.includes(element)) {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove friend</button></li>`;
+                    } else {
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add friend</button></li>`;
+                    }
                 });
 
                 content = content.replace('%content%', friendsList);

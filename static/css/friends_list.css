@@ -25,5 +25,21 @@ main {
 }
 
 .friends_list>li {
+    display: flex;
+    justify-content: space-between;
     height: 50px;
+}
+
+.add_friend {
+    border: none;
+    color: white;
+    border-radius: 20px;
+    background-color: rgb(16, 160, 16);
+}
+
+.remove_friend {
+    border: none;
+    color: white;
+    border-radius: 20px;
+    background-color: rgb(185, 50, 32);
 }

@@ -54,27 +54,32 @@ export async function handleAddFriends(req, res, db) {
                 friends = friends.filter(function (el) { return el.username != result.username; });
 
                 //remove the logged in users friends from the list
-
-
-                console.log(result.friends);
-
+                result.friends.forEach(element => {
+                    friends = friends.filter(function (el) { return el.username != element; });
+                });
 
                 let friendsList = '';
                 friends.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a></li>`;
+                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add friend</button></li>`;
                 });
                 content = content.replace('%content%', friendsList);
 
             } else {
                 // search for nameSearch in mongodb
                 let searchResult = await db.collection('users').find({ 'username': { '$regex': nameSearch } }).limit(40).toArray();
+
                 //remove the logged in user from friendslist.
                 searchResult = searchResult.filter(function (el) { return el.username != result.username; });
+
+                //remove the logged in users friends from the list
+                result.friends.forEach(element => {
+                    searchResult = searchResult.filter(function (el) { return el.username != element; });
+                });
 
                 let friendsList = '';
 
                 searchResult.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a></li>`;
+                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add friend</button></li>`;
                 });
 
                 if (searchResult.length == 0) {

@@ -7,6 +7,7 @@ import { handleStatic } from './staticHandler.js';
 import { handleUserPath } from './userpathHandler.js';
 import { templateNavbar } from '../templaters/navbar.js';
 import { handleAddFriends } from './addFriendsHandler.js';
+import { handleFriendRequests } from './friendRequestHandler.js';
 
 /**
  * 
@@ -73,6 +74,9 @@ export async function handlePath(req, res, pathSegments, db) {
             break;
         case 'add-friends':
             handleAddFriends(req, res, db);
+            break;
+        case 'friendRequest':
+            handleFriendRequests(req, res, db, pathSegments);
             break;
         default:
             //Locate UserPath
