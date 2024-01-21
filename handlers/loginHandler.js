@@ -46,7 +46,7 @@ export async function handleLogin(req, res, db) {
                         db.collection("users").updateOne(query, newSessionId);
 
 
-                        console.log('Logged in as ' + data.username);
+                        console.log('Logged in as ' + data.username + ' | loginHandler.js');
                         // /profile/profileID
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.write(JSON.stringify({

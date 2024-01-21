@@ -37,7 +37,8 @@ export async function handleRegistration(req, res, db) {
                 sessionId: sessionId,
                 username: data.username,
                 password: encryptedPassword,
-                profile_pic: `https://ui-avatars.com/api/?name=${data.username}`
+                profile_pic: `https://ui-avatars.com/api/?name=${data.username}`,
+                friends: ['hugo']
             };
 
 
@@ -67,7 +68,6 @@ export async function handleRegistration(req, res, db) {
                 res.end();
                 return;
             } catch (err) {
-                console.log(err);
                 res.writeHead(409, { 'Content-Type': 'application/json' });
                 res.write(JSON.stringify({
                     'success': false,

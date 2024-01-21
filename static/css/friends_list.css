@@ -1,0 +1,29 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.searchbox {
+    display: flex;
+    flex-direction: row;
+}
+
+.searchbox>button {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.searchbox>.form-outline>input {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.friends_list {
+    width: 50%;
+}
+
+.friends_list>li {
+    height: 50px;
+}

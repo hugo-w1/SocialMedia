@@ -4,7 +4,8 @@ import { handleRegistration } from "./registrationHandler.js";
 import { handleLogin } from "./loginHandler.js";
 import { handleLogout } from './logoutHandler.js';
 import { handleStatic } from './staticHandler.js';
-import { handleFriendList } from './friendListHandler.js';
+import { handleUserPath } from './userpathHandler.js';
+import { templateNavbar } from '../templaters/navbar.js';
 
 /**
  * 
@@ -26,11 +27,16 @@ export async function handlePath(req, res, pathSegments, db) {
         //get home page
         let content = (await fs.readFile('./templates/index.html')).toString();
 
+
+        //Add navbar
+        let navbar = await templateNavbar(result);
+        content = content.replace('%navbar%', navbar);
+
+
         if (!result) {
             //Client not logged in
             res.writeHead(200, { 'Content-Type': 'text/html' });
             content = content.replace('%content%', '<h1>Not logged in</h1> <br> <a href="/login">Login</a> <a href="/register">Register</a> ');
-
             res.write(content);
             res.end();
             return;
@@ -43,19 +49,11 @@ export async function handlePath(req, res, pathSegments, db) {
             <p>Your encrypted password is ${result.password}</p>
             `);
 
-            content = content.replace('%profile_picture%', result.profile_pic);
-
-            content = content.replace('%logout%', `<form action="/logout" method="post">
-            <input type="submit" value="Logout">
-            </form>`);
-
             res.write(content);
             res.end();
             return;
         }
     }
-
-
 
 
     let seg = pathSegments.shift();
@@ -72,14 +70,22 @@ export async function handlePath(req, res, pathSegments, db) {
         case 'static':
             handleStatic(req, res, pathSegments);
             break;
-        case 'friends':
-            handleFriendList(req, res, db);
-            break;
         default:
-            //404
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.write('404, Not found');
-            res.end();
+            //Locate UserPath
+            let result = await db.collection('users').findOne({
+                username: seg
+            });
+            if (!result) {
+                //404
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.write('404, Not found');
+                res.end();
+                break;
+            } else {
+                //Found user profile with path segment match.
+                //Forward to userpathHandler.js
+                handleUserPath(req, res, db, pathSegments, result);
+            }
             break;
     }
 }
