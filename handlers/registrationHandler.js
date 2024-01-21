@@ -32,16 +32,13 @@ export async function handleRegistration(req, res, db) {
             await bcrypt.hash(data.password, 10).then(function (hash) {
                 encryptedPassword = hash;
             });
-
             let dataObj = {
                 sessionId: sessionId,
                 username: data.username,
                 password: encryptedPassword,
                 profile_pic: `https://ui-avatars.com/api/?name=${data.username}`,
-                friends: ['hugo']
+                friends: []
             };
-
-
             try {
 
                 if (data.password.replace(/^\s+|\s+$/gm, '').length === 0) {

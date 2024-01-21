@@ -6,6 +6,7 @@ import { handleLogout } from './logoutHandler.js';
 import { handleStatic } from './staticHandler.js';
 import { handleUserPath } from './userpathHandler.js';
 import { templateNavbar } from '../templaters/navbar.js';
+import { handleAddFriends } from './addFriendsHandler.js';
 
 /**
  * 
@@ -69,6 +70,9 @@ export async function handlePath(req, res, pathSegments, db) {
             break;
         case 'static':
             handleStatic(req, res, pathSegments);
+            break;
+        case 'add-friends':
+            handleAddFriends(req, res, db);
             break;
         default:
             //Locate UserPath
