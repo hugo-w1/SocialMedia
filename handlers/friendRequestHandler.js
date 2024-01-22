@@ -9,7 +9,6 @@ import Cookies from 'cookies';
 
 export async function handleFriendRequests(req, res, db, pathSegments) {
     if (req.method == 'POST') {
-
         var cookies = new Cookies(req, res);
         let sessionId = cookies.get('sessionId');
 
@@ -24,7 +23,6 @@ export async function handleFriendRequests(req, res, db, pathSegments) {
             req.on('data', function (chunk) {
                 chunks.push(chunk);
             });
-
             req.on('end', async function () {
                 let data = JSON.parse(chunks);
 

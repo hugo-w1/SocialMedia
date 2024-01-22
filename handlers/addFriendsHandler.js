@@ -60,7 +60,7 @@ export async function handleAddFriends(req, res, db) {
 
                 let friendsList = '';
                 friends.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add friend</button></li>`;
+                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add Friend</button></li>`;
                 });
                 content = content.replace('%content%', friendsList);
 
@@ -79,7 +79,7 @@ export async function handleAddFriends(req, res, db) {
                 let friendsList = '';
 
                 searchResult.forEach(element => {
-                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add friend</button></li>`;
+                    friendsList += `<li class="list-group-item"><a href="../${element.username}">${element.username}</a> <button class="add_friend" username="${element.username}">Add Friend</button></li>`;
                 });
 
                 if (searchResult.length == 0) {

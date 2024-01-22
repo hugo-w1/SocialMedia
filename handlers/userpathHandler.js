@@ -1,4 +1,6 @@
 import fs from 'fs/promises';
+import Cookies from 'cookies';
+import { templateNavbar } from '../templaters/navbar.js';
 import { handleFriendList } from './friendListHandler.js';
 
 /**
@@ -11,9 +13,52 @@ import { handleFriendList } from './friendListHandler.js';
  */
 export async function handleUserPath(req, res, db, pathSegments, result) {
     if (pathSegments.length === 0) {
-        //show user profile
+        /*
+        SHOW USER PROFILE
+        */
+        //get the logged in clients sessionID
+        var cookies = new Cookies(req, res);
+        let sessionId = cookies.get('sessionId');
+
+        let clientDB = await db.collection('users').findOne({
+            sessionId: sessionId
+        });
+
+        let content = (await fs.readFile('./templates/profile.html')).toString();
+
+        //Add navbar
+        let navbar = await templateNavbar(clientDB);
+        content = content.replace('%navbar%', navbar);
+
+        //template user profile
+        content = content.replaceAll('%username%', result.username);
+        content = content.replace('%profile_pic%', result.profile_pic);
+
+        content = content.replace('%friends_amount%', `<a href="./${result.username}/friends">${result.friends.length}</a>`);
+        content = content.replace('%friends%', `<a href="./${result.username}/friends">Friends</a>`);
+
+
+        if (clientDB.username != result.username) {
+            //check if client has the user added as a friend
+
+            if (clientDB.friends.includes(result.username)) {
+                content = content.replace('%user_buttons%', `<ul class="buttons">
+                <li><button username="${result.username}" class="btn btn-sm btn-danger w-100 ml-2">Remove Friend</button></li>
+               </ul>`);
+            } else {
+                content = content.replace('%user_buttons%', `<ul class="buttons">
+                <li><button username="${result.username}" class="btn btn-sm btn-success w-100 ml-2">Add Friend</button></li>
+               </ul>`);
+            }
+        } else {
+            //  user viewing his own profile
+            content = content.replace('%user_buttons%', 'Edit profile');
+        }
+
+
+
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write(result.username + 's Profile');
+        res.write(content);
         res.end();
         return;
     }

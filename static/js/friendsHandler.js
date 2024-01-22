@@ -10,11 +10,18 @@ async function sendRequest(e) {
     let method = '';
 
     //set method, remove or add friend
-    if (e.target.innerHTML == 'Add friend') {
+    console.log(e.target.innerHTML);
+
+    if (e.target.innerHTML == 'Add Friend') {
         method = 'add';
     }
-    if (e.target.innerHTML == 'Remove friend') {
-        method = 'remove';
+    else if (e.target.innerHTML == 'Remove Friend') {
+        //comfirm remove friend
+        if (confirm(`Are you sure you want to remove ${e.target.attributes.username.nodeValue} as a friend?`)) {
+            method = 'remove';
+        } else { return; }
+    } else {
+        return;
     }
 
     //send data to server, post method

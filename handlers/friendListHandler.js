@@ -7,7 +7,7 @@ import { templateNavbar } from '../templaters/navbar.js';
  * 
  * @param {import 'http'.IncomingMessage} req 
  * @param {import 'http'.ServerResponse} res 
- * @param {*} db // logged in user mongodb
+ * @param {*} db
  * @param {*} userDBFriendsList // The db of the friendlist
  */
 export async function handleFriendList(req, res, db, pathSegments, userDBFriendsList) {
@@ -43,7 +43,6 @@ export async function handleFriendList(req, res, db, pathSegments, userDBFriends
             let navbar = await templateNavbar(result);
             content = content.replace('%navbar%', navbar);
 
-
             //get searchParams
             let url = new URL(req.url, 'http://' + req.headers.host);
             let nameSearch = url.searchParams.get('name');
@@ -67,12 +66,13 @@ export async function handleFriendList(req, res, db, pathSegments, userDBFriends
                         return;
                     }
                     if (result.friends.includes(element)) {
-                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove friend</button></li>`;
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove Friend</button></li>`;
                     } else {
-                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add friend</button></li>`;
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add Friend</button></li>`;
                     }
                 });
 
+                content = content.replace('%username%', userDBFriendsList.username);
                 content = content.replace('%content%', friendsList);
 
                 searchInfo = `${friends.length} friends`;
@@ -97,12 +97,13 @@ export async function handleFriendList(req, res, db, pathSegments, userDBFriends
                         return;
                     }
                     if (result.friends.includes(element)) {
-                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove friend</button></li>`;
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="remove_friend" username="${element}">Remove Friend</button></li>`;
                     } else {
-                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add friend</button></li>`;
+                        friendsList += `<li class="list-group-item"><a href="../${element}">${element}</a> <button class="add_friend" username="${element}">Add Friend</button></li>`;
                     }
                 });
-
+                
+                content = content.replace('%username%', userDBFriendsList.username);
                 content = content.replace('%content%', friendsList);
             }
 
