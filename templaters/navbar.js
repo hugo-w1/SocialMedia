@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { templateNotifications } from './notifications.js';
 
 export async function templateNavbar(result) {
     let navbar = (await fs.readFile('./templates/navbar.html')).toString();
@@ -7,6 +8,7 @@ export async function templateNavbar(result) {
         //not logged in
         navbar = navbar.replace('%navbar_buttons%', '');
         navbar = navbar.replace('%navbar_profile%', '');
+        navbar = navbar.replace('%notifications%', '');
 
         return navbar;
     } else {
@@ -35,6 +37,11 @@ export async function templateNavbar(result) {
             </div>
         </div>
     </div>`);
+
+        let notificationsBell = await templateNotifications(result);
+
+        navbar = navbar.replace('%notifications%', notificationsBell);
+
         return navbar;
     }
 }

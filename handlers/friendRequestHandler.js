@@ -26,11 +26,13 @@ export async function handleFriendRequests(req, res, db, pathSegments) {
             req.on('end', async function () {
                 let data = JSON.parse(chunks);
 
+                //get the user that the person wants to add.
+                let Adduser = await db.collection('users').findOne({
+                    username: data.affectedFriend
+                });
+
                 try {
                     //Check if the added user exists
-                    let Adduser = await db.collection('users').findOne({
-                        username: data.affectedFriend
-                    });
                     if (!Adduser) {
                         throw new Error('User does not exist');
                     }
@@ -54,7 +56,30 @@ export async function handleFriendRequests(req, res, db, pathSegments) {
                             $set: { friends: friendlist }
                         };
 
+                        //update the friend adders db.
                         db.collection("users").updateOne(query, newFriendsList);
+
+
+                        //add a notification for the friend the user added.
+
+
+                        let notificationQuery = { sessionId: Adduser.sessionId };
+
+                        let notificationsList = Adduser.notifications;
+
+                        let newNotification = {
+                            'message': `${result.username} Added You As A Friend `,
+                            'time': Date.now()
+                        };
+
+                        notificationsList.push(newNotification);
+
+                        let newNotificationList = {
+                            $set: { notifications: notificationsList }
+                        };
+
+                        //update database with new notification
+                        db.collection("users").updateOne(notificationQuery, newNotificationList);
                     }
 
                 } catch (err) {

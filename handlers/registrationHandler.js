@@ -37,8 +37,10 @@ export async function handleRegistration(req, res, db) {
                 username: data.username,
                 password: encryptedPassword,
                 profile_pic: `https://ui-avatars.com/api/?name=${data.username}`,
-                friends: []
+                friends: [],
+                notifications: []
             };
+            
             try {
 
                 if (data.password.replace(/^\s+|\s+$/gm, '').length === 0) {
