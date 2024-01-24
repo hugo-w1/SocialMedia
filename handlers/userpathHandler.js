@@ -37,25 +37,27 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         content = content.replace('%friends_amount%', `<a href="./${result.username}/friends">${result.friends.length}</a>`);
         content = content.replace('%friends%', `<a href="./${result.username}/friends">Friends</a>`);
 
+        try {
+            if (clientDB.username != result.username) {
+                //check if client has the user added as a friend
 
-        if (clientDB.username != result.username) {
-            //check if client has the user added as a friend
-
-            if (clientDB.friends.includes(result.username)) {
-                content = content.replace('%user_buttons%', `<ul class="buttons">
+                if (clientDB.friends.includes(result.username)) {
+                    content = content.replace('%user_buttons%', `<ul class="buttons">
                 <li><button username="${result.username}" class="btn btn-sm btn-danger w-100 ml-2">Remove Friend</button></li>
                </ul>`);
-            } else {
-                content = content.replace('%user_buttons%', `<ul class="buttons">
+                } else {
+                    content = content.replace('%user_buttons%', `<ul class="buttons">
                 <li><button username="${result.username}" class="btn btn-sm btn-success w-100 ml-2">Add Friend</button></li>
                </ul>`);
+                }
+            } else {
+                //  user viewing his own profile
+                content = content.replace('%user_buttons%', 'Edit profile');
             }
-        } else {
-            //  user viewing his own profile
-            content = content.replace('%user_buttons%', 'Edit profile');
+
+        } catch (err) {
+            content = content.replace('%user_buttons%', '');
         }
-
-
 
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(content);

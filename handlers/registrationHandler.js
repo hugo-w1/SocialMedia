@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 import { randomUUID } from 'crypto';
 import Cookies from 'cookies';
 import bcrypt from 'bcrypt';
-import { ReturnDocument } from 'mongodb';
 
 /**
  * 
@@ -40,7 +39,7 @@ export async function handleRegistration(req, res, db) {
                 friends: [],
                 notifications: []
             };
-            
+
             try {
 
                 if (data.password.replace(/^\s+|\s+$/gm, '').length === 0) {
@@ -50,6 +49,9 @@ export async function handleRegistration(req, res, db) {
                 if (data.username.length === 0) {
                     throw new Error('Username cannot be blank');
                 }
+                if (data.username.length > 10) {
+                    throw new Error('Username too long, max 10 chars');
+                }
 
                 await db.collection('users').insertOne(dataObj);
 
@@ -57,12 +59,11 @@ export async function handleRegistration(req, res, db) {
                 let cookie = new Cookies(req, res);
                 cookie.set('sessionId', sessionId);
 
-                //__/profile/profileID
                 //New user created
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.write(JSON.stringify({
                     'success': true,
-                    'redirect': '/'
+                    'redirect': `../${data.username}`
                 }));
                 res.end();
                 return;

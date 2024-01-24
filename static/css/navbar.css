@@ -13,12 +13,19 @@
 }
 
 .menu-title {
+    cursor: pointer;
     font-size: 18px;
     color: black;
+    transition: 200ms;
 }
 
-.me-3{
+.menu-title:hover {
+    color: rgb(63, 167, 49);
+}
+
+.me-3 {
     text-decoration: none;
+    color: black;
 }
 
 

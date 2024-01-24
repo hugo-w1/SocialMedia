@@ -150,7 +150,5 @@ export async function handleFriendRequests(req, res, db, pathSegments) {
 
         }
 
-
-
     }
 }

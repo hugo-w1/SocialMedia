@@ -51,7 +51,7 @@ export async function handleLogin(req, res, db) {
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.write(JSON.stringify({
                             'success': true,
-                            'redirect': '/'
+                            'redirect': `../${data.username}`
                         }));
                         res.end();
                     }
