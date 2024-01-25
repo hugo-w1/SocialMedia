@@ -9,6 +9,7 @@ import { templateNavbar } from '../templaters/navbar.js';
 import { handleAddFriends } from './addFriendsHandler.js';
 import { handleFriendRequests } from './friendRequestHandler.js';
 import { handleNotification } from './notificationsHandler.js';
+import { handleUpload } from './uploadHandler.js';
 
 /**
  * 
@@ -81,6 +82,9 @@ export async function handlePath(req, res, pathSegments, db) {
             break;
         case 'notifications':
             handleNotification(req, res, db);
+            break;
+        case 'upload':
+            handleUpload(req, res, db);
             break;
         default:
             //Locate UserPath

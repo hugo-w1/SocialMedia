@@ -6,7 +6,7 @@ import fs from 'fs/promises';
  * @param {string[]} pathSegments 
  */
 export async function handleStatic(req, res, pathSegments) {
-    let seg = pathSegments.shift();
+    let seg = pathSegments.shift(); // css || js
     switch (seg) {
         case 'css':
             sendFile((seg + '/' + pathSegments.shift()), { 'Content-Type': 'text/css' });
