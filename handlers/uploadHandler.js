@@ -2,8 +2,7 @@ import Cookies from "cookies";
 import fs from 'fs/promises';
 import { createWriteStream } from 'fs'
 import busboy from 'busboy';
-import os from 'os';
-import path from 'path';
+import { randomUUID } from 'crypto'
 
 import { templateNavbar } from '../templaters/navbar.js';
 
@@ -47,6 +46,7 @@ export async function handleUpload(req, res, db) {
 
             let saveTo = '';
             let imageText = '';
+            let saveFileName = '';
 
             try {
 
@@ -65,7 +65,8 @@ export async function handleUpload(req, res, db) {
                     // set the path to save the file
 
                     //Save in the socialmedia userUploads fodler
-                    saveTo = `./userUploads/${Date.now()}_${filename}`;
+                    saveFileName = `${Date.now()}_${filename}`;
+                    saveTo = `./userUploads/${saveFileName}`;
 
                     console.log(`File [${name}] is saving to ${saveTo}`)
 
@@ -90,24 +91,31 @@ export async function handleUpload(req, res, db) {
 
                     let query = { sessionId: result.sessionId };
 
-                let posts = result.posts;
+                    let posts = result.posts;
 
-                let newPost = {
-                    'image': saveTo,
-                    'text': imageText,
-                    'time': Date.now()
-                };
+                    //include static path in saveTo, diffrent from the real save path.
 
-                posts.push(newPost);
+                    saveTo = `static/userUploads/${saveFileName}`;
 
-                let newPostsList = {
-                    $set: { posts: posts }
-                };
+                    let newPost = {
+                        'id': randomUUID(),
+                        'image': saveTo,
+                        'text': imageText,
+                        'time': Date.now(),
+                        'comments': [],
+                        'likes': []
+                    };
 
-                //update database with new notification
-                db.collection("users").updateOne(query, newPostsList);
+                    posts.push(newPost);
 
+                    let newPostsList = {
+                        $set: { posts: posts }
+                    };
 
+                    //update database with new notification
+                    db.collection("users").updateOne(query, newPostsList);
+
+                    //redirect to users post
                     console.log('Done parsing form!');
                     res.end('Done parsing form!');
                 });

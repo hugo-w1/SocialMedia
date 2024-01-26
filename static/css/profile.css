@@ -34,10 +34,27 @@
     flex-direction: row;
     width: 100%;
 }
-.buttons>li{
+
+.buttons>li {
     width: 100%;
 }
 
 ul {
     list-style-type: none;
+}
+
+.posts {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.posts>div {
+    width: 20%;
+    height: auto;
+    border: solid;
+}
+
+.posts>div>img {
+    width: 100%;
+    height: auto;
 }

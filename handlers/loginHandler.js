@@ -28,7 +28,6 @@ export async function handleLogin(req, res, db) {
                 let result = await db.collection('users').findOne({
                     username: data.username
                 });
-
                 //check password match
                 bcrypt.compare(data.password, result.password).then(function (match) {
                     if (match) {
@@ -74,6 +73,5 @@ export async function handleLogin(req, res, db) {
                 res.end();
             }
         });
-
     }
 }

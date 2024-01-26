@@ -24,21 +24,22 @@
 
     <main>
         <div class="container col-md-6">
+            <h2>Upload Content</h2>
             <div class="mb-5">
                 <form action="/upload" method="post" enctype="multipart/form-data">
                     <label for="image" class="form-label">Upload Image</label>
                     <input class="form-control" type="file" accept="image/png, image/jpeg" name="image" id="formFile">
 
                     <label for="text">Text</label>
-                    <input type="text" name="text" id="text">
+                    <br>
+                    <textarea autocomplete="off" name="text" id="text" rows="4" cols="50"></textarea>
+                    <br>
                     <input type="submit">
                 </form>
-
             </div>
             <img id="frame" src="" class="img-fluid" />
         </div>
 
-        %content%
     </main>
 
 </body>

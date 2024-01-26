@@ -21,6 +21,9 @@ export async function templateNavbar(result) {
             <li class="nav-item">
                 <a class="nav-link" href="/${result.username}/friends">Friends</a>
             </li>
+            <li class="nav-item">
+            <a class="nav-link" href="../upload">Upload</a>
+        </li>
         </ul>`);
 
         navbar = navbar.replace('%navbar_profile%', `<div class="d-flex">

@@ -37,6 +37,21 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         content = content.replace('%friends_amount%', `<a href="./${result.username}/friends">${result.friends.length}</a>`);
         content = content.replace('%friends%', `<a href="./${result.username}/friends">Friends</a>`);
 
+        content = content.replace('%posts_amount%', result.posts.length);
+
+        if (result.posts.length > 0) {
+            let postsContent = '';
+            result.posts.forEach(element => {
+                postsContent += `<div><img src="${element.image}" alt="user posted content"></div>`;
+            });
+            content = content.replace('%posts%', postsContent);
+
+        } else {
+            content = content.replace('%posts%', '');
+        }
+
+
+
         try {
             if (clientDB.username != result.username) {
                 //check if client has the user added as a friend
@@ -64,11 +79,14 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         res.end();
         return;
     }
+
     let seg = pathSegments.shift();
 
     switch (seg) {
         case 'friends':
             handleFriendList(req, res, db, pathSegments, result);
+            break;
+        case 'post':
             break;
         default:
             //404
