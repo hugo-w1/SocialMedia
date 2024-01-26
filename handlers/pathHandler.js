@@ -93,7 +93,7 @@ export async function handlePath(req, res, pathSegments, db) {
             });
             if (!result) {
                 //404
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.writeHead(418, { 'Content-Type': 'text/plain' });
                 res.write('404, Not found');
                 res.end();
                 break;

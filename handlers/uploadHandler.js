@@ -31,15 +31,12 @@ export async function handleUpload(req, res, db) {
         res.end();
         return;
     } else {
-
-        if (req.method == 'GET') {
-
+        if (req.method === 'GET') {
             let content = (await fs.readFile('./templates/upload.html')).toString();
 
             //template navbar
             let navbar = await templateNavbar(result);
             content = content.replace('%navbar%', navbar);
-
 
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.write(content);
@@ -47,40 +44,84 @@ export async function handleUpload(req, res, db) {
 
         } else if (req.method === 'POST') {
 
-            const bb = busboy({ headers: req.headers });
-            bb.on('file', (name, file, info) => {
-                // destructuring the info object to get the filename, encoding and mimeType
-                const { filename, encoding, mimeType } = info;
-                console.log(
-                    `File [${name}]: filename: ${filename}, encoding: ${encoding}, mimeType: ${mimeType}}`);
 
-                // set the path to save the file
+            let saveTo = '';
+            let imageText = '';
 
-                /*Save in the socialmedia userupload fodler*/
-                const saveTo = `./userUploads/${Date.now()}_${filename}`;
+            try {
 
-                console.log(`File [${name}] is saving to ${saveTo}`)
+                const bb = busboy({ headers: req.headers });
 
-                // save the file
-                file.pipe(createWriteStream(saveTo));
+                bb.on('file', (name, file, info) => {
+                    // destructuring the info object to get the filename, encoding and mimeType
+                    const { filename, encoding, mimeType } = info;
 
-                file.on('data', (data) => {
-                    console.log(`File [${name}] got ${data.length} bytes`);
-                }).on('close', () => {
-                    console.log(`File [${name}] done`);
+                    if (mimeType != 'image/png' && mimeType != 'image/jpg' && mimeType != 'image/jpeg') {
+                        throw new Error(`Invalid mime type: ${mimeType}`);
+                    }
+
+                    console.log(`File [${name}]: filename: ${filename}, encoding: ${encoding}, mimeType: ${mimeType}}`);
+
+                    // set the path to save the file
+
+                    //Save in the socialmedia userUploads fodler
+                    saveTo = `./userUploads/${Date.now()}_${filename}`;
+
+                    console.log(`File [${name}] is saving to ${saveTo}`)
+
+                    // save the file
+                    file.pipe(createWriteStream(saveTo));
+
+                    file.on('data', (data) => {
+                        console.log(`File [${name}] got ${data.length} bytes`);
+                    }).on('close', () => {
+                        console.log(`File [${name}] done`);
+                    });
                 });
-            });
-            bb.on('field', (name, val, info) => {
-                console.log(`Field [${name}]: value: `, val);
-            });
-            bb.on('close', () => {
-                console.log('Done parsing form!');
-                res.end('Done parsing form!');
-            });
 
-            // pipe the request to busboy to parse the form data
-            req.pipe(bb);
-            
+                bb.on('field', (name, val, info) => {
+                    console.log(`Field [${name}]: value: `, val);
+                    imageText = val;
+                });
+
+
+
+                bb.on('close', () => {
+
+                    let query = { sessionId: result.sessionId };
+
+                let posts = result.posts;
+
+                let newPost = {
+                    'image': saveTo,
+                    'text': imageText,
+                    'time': Date.now()
+                };
+
+                posts.push(newPost);
+
+                let newPostsList = {
+                    $set: { posts: posts }
+                };
+
+                //update database with new notification
+                db.collection("users").updateOne(query, newPostsList);
+
+
+                    console.log('Done parsing form!');
+                    res.end('Done parsing form!');
+                });
+
+                // pipe the request to busboy to parse the form data
+                req.pipe(bb);
+            } catch (error) {
+                console.log(error);
+
+                res.writeHead(501, { 'Content-Type': 'text/plain' });
+                res.write('internal server error');
+                res.end;
+
+            }
         }
     }
 }

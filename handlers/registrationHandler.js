@@ -37,7 +37,8 @@ export async function handleRegistration(req, res, db) {
                 password: encryptedPassword,
                 profile_pic: `https://ui-avatars.com/api/?name=${data.username}`,
                 friends: [],
-                notifications: []
+                notifications: [],
+                posts: []
             };
 
             try {
