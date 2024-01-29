@@ -47,7 +47,7 @@ export async function handleUpload(req, res, db) {
             let saveTo = '';
             let imageText = '';
             let saveFileName = '';
-
+            let postId = '';
             try {
 
                 const bb = busboy({ headers: req.headers });
@@ -96,14 +96,16 @@ export async function handleUpload(req, res, db) {
                     //include static path in saveTo, diffrent from the real save path.
 
                     saveTo = `static/userUploads/${saveFileName}`;
+                    postId = randomUUID();
+
 
                     let newPost = {
-                        'id': randomUUID(),
+                        'id': postId,
                         'image': saveTo,
                         'text': imageText,
                         'time': Date.now(),
                         'comments': [],
-                        'likes': []
+                        'likes': [],
                     };
 
                     posts.push(newPost);
@@ -116,8 +118,8 @@ export async function handleUpload(req, res, db) {
                     db.collection("users").updateOne(query, newPostsList);
 
                     //redirect to users post
-                    console.log('Done parsing form!');
-                    res.end('Done parsing form!');
+                    res.writeHead(302, { 'Location': `/${result.username}/content/${postId}` });
+                    res.end();
                 });
 
                 // pipe the request to busboy to parse the form data

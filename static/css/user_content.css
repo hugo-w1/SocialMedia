@@ -1,0 +1,55 @@
+main {
+    display: flex;
+    justify-content: center;
+
+}
+
+a:link {
+    text-decoration: none !important;
+}
+
+a>h4 {
+    color: black;
+}
+
+.top {
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+    padding-left: 10px;
+    border-bottom: solid;
+}
+
+.top>img {
+    width: 50px;
+    height: auto;
+}
+
+.content_image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content_image>img {
+    width: 100%;
+    height: auto;
+}
+
+.userContent {
+    border: solid;
+    width: 500px;
+    height: auto;
+}
+
+.content_text {
+    height: min-content;
+    border-top: solid;
+}
+
+.bottom_buttons {
+    display: flex;
+    justify-content: space-around;
+}

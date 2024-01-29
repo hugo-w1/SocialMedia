@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import Cookies from 'cookies';
 import { templateNavbar } from '../templaters/navbar.js';
 import { handleFriendList } from './friendListHandler.js';
+import { handleUserContent } from './userContentHanlder.js';
 
 /**
  * 
@@ -39,17 +40,17 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
 
         content = content.replace('%posts_amount%', result.posts.length);
 
+        //users photos
         if (result.posts.length > 0) {
             let postsContent = '';
             result.posts.forEach(element => {
-                postsContent += `<div><img src="${element.image}" alt="user posted content"></div>`;
+                postsContent += `<div><a href="/${result.username}/content/${element.id}"><img src="${element.image}" alt="user posted content"></a></div>`;
             });
             content = content.replace('%posts%', postsContent);
 
         } else {
             content = content.replace('%posts%', '');
         }
-
 
 
         try {
@@ -86,7 +87,8 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         case 'friends':
             handleFriendList(req, res, db, pathSegments, result);
             break;
-        case 'post':
+        case 'content':
+            handleUserContent(req, res, db, pathSegments, result);
             break;
         default:
             //404
