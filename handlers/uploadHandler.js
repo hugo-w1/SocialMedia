@@ -60,7 +60,6 @@ export async function handleUpload(req, res, db) {
                         throw new Error(`Invalid mime type: ${mimeType}`);
                     }
 
-                    console.log(`File [${name}]: filename: ${filename}, encoding: ${encoding}, mimeType: ${mimeType}}`);
 
                     // set the path to save the file
 
@@ -68,14 +67,11 @@ export async function handleUpload(req, res, db) {
                     saveFileName = `${Date.now()}_${filename}`;
                     saveTo = `./userUploads/${saveFileName}`;
 
-                    console.log(`File [${name}] is saving to ${saveTo}`)
 
                     // save the file
                     file.pipe(createWriteStream(saveTo));
 
-                    file.on('data', (data) => {
-                        console.log(`File [${name}] got ${data.length} bytes`);
-                    }).on('close', () => {
+                    file.on('close', () => {
                         console.log(`File [${name}] done`);
                     });
                 });
