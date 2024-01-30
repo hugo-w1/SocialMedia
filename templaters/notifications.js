@@ -14,7 +14,7 @@ export async function templateNotifications(result) {
             content += `<article class="content">
         <div class="notification-item">
             <h4 class="item-title">${element.message}</h4>
-            <p class="item-info"><a href="../${element.message.split(' ')[0]}">View Profile</a></p>
+            <p class="item-info"><a href="/${element.message.split(' ')[0]}">View Profile</a></p>
             <p>&#x2022; ${time2TimeAgo(element.time)}</p>
         </div>
     </article>`;

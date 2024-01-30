@@ -41,15 +41,20 @@ a>h4 {
 .userContent {
     border: solid;
     width: 500px;
-    height: auto;
+    height: fit-content;
 }
 
 .content_text {
+    padding: 10px;
     height: min-content;
     border-top: solid;
 }
 
 .bottom_buttons {
-    display: flex;
-    justify-content: space-around;
+    margin: 10px;
+}
+
+.comment-section {
+    height: 350px;
+    overflow: auto;
 }

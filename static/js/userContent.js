@@ -3,15 +3,17 @@ document.getElementById('like').addEventListener('click', async (e) => {
     e.preventDefault();
 
 
-    let contentOwner = e.target.parentNode.parentNode.attributes.username.nodeValue;
-    let contentId = e.target.parentNode.parentNode.attributes.postid.nodeValue;
+    let contentOwner = await e.target.parentNode.parentNode.attributes.username.nodeValue;
+    let contentId = await e.target.parentNode.parentNode.attributes.postid.nodeValue;
 
-    if (e.target.childNodes[1].attributes.liked.nodeValue == 'false') {
+
+
+    if (e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue == 'false') {
         document.getElementById('like_count').innerHTML++;
-        e.target.childNodes[1].attributes.liked.nodeValue = 'true';
+        e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue = 'true';
     } else {
         document.getElementById('like_count').innerHTML--;
-        e.target.childNodes[1].attributes.liked.nodeValue = 'false';
+        e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue = 'false';
     }
 
 
@@ -23,8 +25,33 @@ document.getElementById('like').addEventListener('click', async (e) => {
         }),
     }).then(response => response.json()
     ).then(response => handleResponse(response));
-
 });
+
+
+
+document.getElementById('comment_btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+
+
+    let contentId = document.getElementById('likebtn').attributes.postid.nodeValue;
+    let comment = document.getElementById('text').value;
+
+    if (comment.trim() == '') {
+        alert('Comment cannot be empty');
+        return;
+    }
+
+    await fetch(`./comment`, {
+        method: 'POST',
+        body: JSON.stringify({
+            'contentId': contentId,
+            'text': comment
+        }),
+    }).then(response => response.json()
+    ).then(response => handleResponse(response), location.reload());
+});
+
+
 
 function handleResponse(res) {
     console.log(res);

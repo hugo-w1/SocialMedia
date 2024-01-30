@@ -58,7 +58,7 @@ export async function handleContentInteraction(req, res, db, action, contentData
                     $set: { likes: likesArray }
                 };
 
-                //update database with new notification
+                //update database 
                 db.collection('posts').updateOne(likesQuery, newLikesList);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -67,9 +67,28 @@ export async function handleContentInteraction(req, res, db, action, contentData
 
             }
 
-
-
         } else if (action === 'comment') {
+
+
+            let commentQuery = { id: contentData.contentId };
+
+            let commentsArray = content.comments;
+
+            commentsArray.push({
+                username: result.username,
+                comment: contentData.text
+            });
+
+
+            let newCommentsList = {
+                $set: { comments: commentsArray }
+            };
+
+            //update database 
+            db.collection('posts').updateOne(commentQuery, newCommentsList);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ 'success': true }));
+            res.end();
 
         }
     }

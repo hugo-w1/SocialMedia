@@ -55,9 +55,40 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
             userContentPage = userContentPage.replace('%content_image%', `/${content.image}`);
             userContentPage = userContentPage.replace('%content_text%', content.text);
 
+
+            //add comments
+            let comments = '';
+            if (content.comments.length != 0) {
+
+                content.comments.forEach(element => {
+
+                    comments += `<div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex flex-row align-items-center">
+                                            <a class="mb-0" href="/${element.username}"><p>${element.username}</p></a>
+                                        </div>
+                                    </div>
+                                    <p>${element.comment}</p>
+                                </div>
+                            </div>`;
+                });
+
+                userContentPage = userContentPage.replace('%comments%', comments);
+
+            } else {
+                userContentPage = userContentPage.replace('%comments%', 'no comments yet');
+            }
+
+
+
+
             let uploadedTime = new Date(content.time).toLocaleDateString("sv-SV");
 
             userContentPage = userContentPage.replace('%upload_time%', uploadedTime);
+
+
+
 
 
 
@@ -81,11 +112,10 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
 
             switch (action) {
                 case 'like':
-                    console.log('like');
                     handleContentInteraction(req, res, db, action, contentData);
                     break;
                 case 'comment':
-                    console.log('comment');
+                    handleContentInteraction(req, res, db, action, contentData);
                     break;
                 default:
                     res.writeHead(501, { 'Content-Type': 'text/plain' });
