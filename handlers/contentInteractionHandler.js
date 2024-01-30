@@ -11,84 +11,67 @@ export async function handleContentInteraction(req, res, db, action, contentData
     var cookies = new Cookies(req, res);
     let sessionId = cookies.get('sessionId');
 
-    //not working
-
-    //get the logged in users db
     let result = await db.collection('users').findOne({
         sessionId: sessionId
     });
     //noone logged in
-    if (result == '') {
+    if (!result) {
         res.end();
         return;
-    }
+    } else {
+        //find post
+        let content = await db.collection('posts').findOne({
+            id: contentData.contentId
+        });
 
-    let contentOwnerDB = await db.collection('users').findOne({
-        username: contentData.contentOwner
-    });
+        if (action === 'like') {
+            if (content.likes.includes(result.username)) {
 
-    let content = '';
-    contentOwnerDB.posts.forEach(element => {
-        //find the post
-        if (contentData.contentId === element.id) {
-            content = element;
-            return;
-        }
-    });
+                let likesQuery = { id: contentData.contentId };
 
-    if (action === 'like') {
+                let newLikes = content.likes;
 
-        let likes = content.likes;
-
-        //check if user already likes this post, if so remove the like.
-        try {
-
-            if (likes.includes(result.username)) {
-
-                let query = { sessionId: contentOwnerDB.sessionId };
-
-                likes.push(result.username);
-
-                let newLikesList = {
-                    $set: { likes: likes }
-                };
-
-                //update the friend adders db.
-                db.collection("users").updateOne(query, newLikesList);
-            } else {
-
-                //filter out the person who removed his like
-                likes = likes.filter(function (username) {
+                newLikes = newLikes.filter(function (username) {
                     return username !== result.username;
                 });
 
-                //get the posters database
-                let query = { sessionId: contentOwnerDB.sessionId };
 
                 let newLikesList = {
-                    $set: { likes: likes }
+                    $set: { likes: newLikes }
                 };
 
-                /*
-
-                db.student.updateOne(
-                    { _id: 1, "students.name": "Alex" },
-                    { $set: { "students.$.email": "alex001@hotmail.com" } }
-                  );
-
-                  */
+                db.collection('posts').updateOne(likesQuery, newLikesList);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ 'success': true }));
+                res.end();
 
 
-                db.collection("users").updateOne(query, newLikesList);
+            } else {
+                let likesQuery = { id: contentData.contentId };
+
+                let likesArray = content.likes;
+
+                likesArray.push(result.username);
+
+
+                let newLikesList = {
+                    $set: { likes: likesArray }
+                };
+
+                //update database with new notification
+                db.collection('posts').updateOne(likesQuery, newLikesList);
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ 'success': true }));
+                res.end();
+
             }
-        } catch (err) {
-            console.log(err);
+
+
+
+        } else if (action === 'comment') {
+
         }
-
-
-
-    } else if (action === 'comment') {
-
     }
 
 }

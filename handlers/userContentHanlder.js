@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import Cookies from 'cookies';
 import { templateNavbar } from '../templaters/navbar.js';
 import { handleContentInteraction } from './contentInteractionHandler.js';
 /**
@@ -13,16 +14,19 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
     if (req.method === 'GET') {
         let contentId = pathSegments.shift();
 
-        let content = '';
-        result.posts.forEach(element => {
-            //find post id
-            if (contentId === element.id) {
-                content = element;
-                return;
-            }
+        let cookies = new Cookies(req, res);
+        let sessionId = cookies.get('sessionId');
+
+        let clientDB = await db.collection('users').findOne({
+            sessionId: sessionId
         });
 
-        if (content == '') {
+
+        let content = await db.collection('posts').findOne({
+            id: contentId
+        });
+
+        if (!content) {
             //404
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.write('404, Not Found');
@@ -36,8 +40,17 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
             userContentPage = userContentPage.replace('%profile_pic%', result.profile_pic);
             userContentPage = userContentPage.replaceAll('%userProfile%', `/${result.username}`);
             userContentPage = userContentPage.replaceAll('%username%', result.username);
-            userContentPage = userContentPage.replace('%postid%', contentId);
+            userContentPage = userContentPage.replace('%postid%', content.id);
+            userContentPage = userContentPage.replace('%likes_amount%', content.likes.length);
 
+
+            //check if user has liked this post
+            console.log(clientDB.username);
+            if (content.likes.includes(clientDB.username)) {
+                userContentPage = userContentPage.replace('%user_liked%', 'true');
+            } else {
+                userContentPage = userContentPage.replace('%user_liked%', 'false');
+            }
 
             userContentPage = userContentPage.replace('%content_image%', `/${content.image}`);
             userContentPage = userContentPage.replace('%content_text%', content.text);
@@ -48,7 +61,7 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
 
 
 
-            let navbar = await templateNavbar(result);
+            let navbar = await templateNavbar(clientDB);
             userContentPage = userContentPage.replace('%navbar%', navbar);
 
             res.writeHead(200, { 'Content-Type': 'text/html' });

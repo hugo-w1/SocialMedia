@@ -33,12 +33,12 @@ export async function handleRegistration(req, res, db) {
             });
             let dataObj = {
                 sessionId: sessionId,
+                userId: randomUUID(),
                 username: data.username,
                 password: encryptedPassword,
                 profile_pic: `https://ui-avatars.com/api/?name=${data.username}`,
                 friends: [],
                 notifications: [],
-                posts: []
             };
 
             try {

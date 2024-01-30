@@ -67,6 +67,9 @@ export async function handleUpload(req, res, db) {
                     saveFileName = `${Date.now()}_${filename}`;
                     saveTo = `./userUploads/${saveFileName}`;
 
+                    //remove all invalid filename characters
+                    saveTo = saveTo.replaceAll("(?i)\\.[^.\\\\/:*?\"<>|\r\n]+$", "");
+
 
                     // save the file
                     file.pipe(createWriteStream(saveTo));
@@ -83,11 +86,7 @@ export async function handleUpload(req, res, db) {
 
 
 
-                bb.on('close', () => {
-
-                    let query = { sessionId: result.sessionId };
-
-                    let posts = result.posts;
+                bb.on('close', async () => {
 
                     //include static path in saveTo, diffrent from the real save path.
 
@@ -96,6 +95,7 @@ export async function handleUpload(req, res, db) {
 
 
                     let newPost = {
+                        'username': result.username,
                         'id': postId,
                         'image': saveTo,
                         'text': imageText,
@@ -104,14 +104,8 @@ export async function handleUpload(req, res, db) {
                         'likes': [],
                     };
 
-                    posts.push(newPost);
+                    await db.collection('posts').insertOne(newPost);
 
-                    let newPostsList = {
-                        $set: { posts: posts }
-                    };
-
-                    //update database with new notification
-                    db.collection("users").updateOne(query, newPostsList);
 
                     //redirect to users post
                     res.writeHead(302, { 'Location': `/${result.username}/content/${postId}` });
@@ -125,8 +119,7 @@ export async function handleUpload(req, res, db) {
 
                 res.writeHead(501, { 'Content-Type': 'text/plain' });
                 res.write('internal server error');
-                res.end;
-
+                res.end();
             }
         }
     }

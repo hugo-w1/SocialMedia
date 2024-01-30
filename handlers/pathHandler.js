@@ -19,13 +19,14 @@ import { handleUpload } from './uploadHandler.js';
  */
 export async function handlePath(req, res, pathSegments, db) {
 
-    if (pathSegments.length === 0) {
-        var cookies = new Cookies(req, res);
-        let sessionId = cookies.get('sessionId');
+    let cookies = new Cookies(req, res);
+    let sessionId = cookies.get('sessionId');
 
-        let result = await db.collection('users').findOne({
-            sessionId: sessionId
-        });
+    let result = await db.collection('users').findOne({
+        sessionId: sessionId
+    });
+
+    if (pathSegments.length === 0) {
 
 
         //get home page

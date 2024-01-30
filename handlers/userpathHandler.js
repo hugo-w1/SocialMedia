@@ -13,17 +13,24 @@ import { handleUserContent } from './userContentHanlder.js';
  * @param {*} result 
  */
 export async function handleUserPath(req, res, db, pathSegments, result) {
+    let cookies = new Cookies(req, res);
+    let sessionId = cookies.get('sessionId');
+
     if (pathSegments.length === 0) {
         /*
         SHOW USER PROFILE
         */
         //get the logged in clients sessionID
-        var cookies = new Cookies(req, res);
-        let sessionId = cookies.get('sessionId');
+
 
         let clientDB = await db.collection('users').findOne({
             sessionId: sessionId
         });
+
+        let posts = await db.collection('posts').find({
+            username: result.username
+        }).toArray();
+
 
         let content = (await fs.readFile('./templates/profile.html')).toString();
 
@@ -38,13 +45,13 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         content = content.replace('%friends_amount%', `<a href="./${result.username}/friends">${result.friends.length}</a>`);
         content = content.replace('%friends%', `<a href="./${result.username}/friends">Friends</a>`);
 
-        content = content.replace('%posts_amount%', result.posts.length);
+        content = content.replace('%posts_amount%', posts.length);
 
         //users photos
-        if (result.posts.length > 0) {
+        if (posts.length > 0) {
             let postsContent = '';
-            result.posts.forEach(element => {
-                postsContent += `<div><a href="/${result.username}/content/${element.id}"><img src="${element.image}" alt="user posted content"></a></div>`;
+            posts.forEach(element => {
+                postsContent += `<div><a href="/${element.username}/content/${element.id}"><img src="${element.image}" alt="user posted content"></a></div>`;
             });
             content = content.replace('%posts%', postsContent);
 
