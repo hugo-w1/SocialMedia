@@ -48,9 +48,12 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         content = content.replace('%posts_amount%', posts.length);
 
         //users photos
+        let totalLikes = 0;
         if (posts.length > 0) {
+
             let postsContent = '';
             posts.forEach(element => {
+                totalLikes += element.likes.length;
                 postsContent += `<div><a href="/${element.username}/content/${element.id}"><img src="${element.image}" alt="user posted content"></a></div>`;
             });
             content = content.replace('%posts%', postsContent);
@@ -58,6 +61,7 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
         } else {
             content = content.replace('%posts%', '');
         }
+        content = content.replace('%likes%', totalLikes);
 
 
         try {

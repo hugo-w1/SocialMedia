@@ -48,6 +48,7 @@ export async function handleUpload(req, res, db) {
             let imageText = '';
             let saveFileName = '';
             let postId = '';
+            let newPost = {};
             try {
 
                 const bb = busboy({ headers: req.headers });
@@ -64,12 +65,16 @@ export async function handleUpload(req, res, db) {
                     // set the path to save the file
 
                     //Save in the socialmedia userUploads fodler
-                    saveFileName = `${Date.now()}_${filename}`;
+
+                    //make filename a valid filename in windows
+                    let tmpFilename = filename;
+                    tmpFilename = tmpFilename.replace(/[ &\/\\#,+()$~%'":*?<>{}]/g, '');
+                    console.log(tmpFilename);
+                    saveFileName = `${Date.now()}_${tmpFilename.trim()}`;
+
                     saveTo = `./userUploads/${saveFileName}`;
 
                     //remove all invalid filename characters
-                    saveTo = saveTo.replaceAll("(?i)\\.[^.\\\\/:*?\"<>|\r\n]+$", "");
-
 
                     // save the file
                     file.pipe(createWriteStream(saveTo));
@@ -94,7 +99,7 @@ export async function handleUpload(req, res, db) {
                     postId = randomUUID();
 
 
-                    let newPost = {
+                    newPost = {
                         'username': result.username,
                         'id': postId,
                         'image': saveTo,
@@ -104,8 +109,9 @@ export async function handleUpload(req, res, db) {
                         'likes': [],
                     };
 
-                    await db.collection('posts').insertOne(newPost);
 
+                    //save in mongodb
+                    await db.collection('posts').insertOne(newPost);
 
                     //redirect to users post
                     res.writeHead(302, { 'Location': `/${result.username}/content/${postId}` });
@@ -114,6 +120,7 @@ export async function handleUpload(req, res, db) {
 
                 // pipe the request to busboy to parse the form data
                 req.pipe(bb);
+
             } catch (error) {
                 console.log(error);
 

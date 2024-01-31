@@ -10,6 +10,7 @@ import { handleAddFriends } from './addFriendsHandler.js';
 import { handleFriendRequests } from './friendRequestHandler.js';
 import { handleNotification } from './notificationsHandler.js';
 import { handleUpload } from './uploadHandler.js';
+import { handleUserFeed } from './homeFeedHandler.js';
 
 /**
  * 
@@ -36,24 +37,24 @@ export async function handlePath(req, res, pathSegments, db) {
         //Add navbar
         let navbar = await templateNavbar(result);
         content = content.replace('%navbar%', navbar);
-
+        
 
         if (!result) {
             //Client not logged in
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            content = content.replace('%content%', '<h1>Not logged in</h1> <br> <a href="/login">Login</a> <a href="/register">Register</a> ');
+            content = content.replace('%content%', '<div><div><h1>Not logged in</h1></div> <br> <a href="/login"><h2>Login</h2></a> <a href="/register"><h2>Register</h2></a></div> ');
             res.write(content);
             res.end();
             return;
         } else {
             //Client logged in
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            content = content.replace('%content%', `
-            <h1>Welcome ${result.username}</h1>
-            <br>
-            <p>Your encrypted password is ${result.password}</p>
-            `);
 
+            //Create post feed for user
+            let feed = await handleUserFeed(db, result);
+
+            content = content.replace('%content%', feed);
+
+            res.writeHead(200, { 'Content-Type': 'text/html' });
             res.write(content);
             res.end();
             return;

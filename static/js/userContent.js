@@ -7,7 +7,6 @@ document.getElementById('like').addEventListener('click', async (e) => {
     let contentId = await e.target.parentNode.parentNode.attributes.postid.nodeValue;
 
 
-
     if (e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue == 'false') {
         document.getElementById('like_count').innerHTML++;
         e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue = 'true';
@@ -16,7 +15,6 @@ document.getElementById('like').addEventListener('click', async (e) => {
         e.target.childNodes[1].childNodes[1].attributes.liked.nodeValue = 'false';
     }
 
-
     await fetch(`./like`, {
         method: 'POST',
         body: JSON.stringify({
@@ -24,7 +22,7 @@ document.getElementById('like').addEventListener('click', async (e) => {
             'contentOwner': contentOwner
         }),
     }).then(response => response.json()
-    ).then(response => handleResponse(response));
+    ).then(response => handleResponse(response, 'like'));
 });
 
 
@@ -48,12 +46,14 @@ document.getElementById('comment_btn').addEventListener('click', async (e) => {
             'text': comment
         }),
     }).then(response => response.json()
-    ).then(response => handleResponse(response), location.reload());
+    ).then(response => handleResponse(response, 'comment'));
 });
 
 
-
-function handleResponse(res) {
+function handleResponse(res, action) {
     console.log(res);
+    if (action === 'comment') {
+        location.reload();
+    }
 }
 
