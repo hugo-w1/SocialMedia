@@ -47,7 +47,7 @@ export async function handleUserPath(req, res, db, pathSegments, result) {
 
         content = content.replace('%posts_amount%', posts.length);
 
-        //users photos
+        //users photosm
         let totalLikes = 0;
         if (posts.length > 0) {
 

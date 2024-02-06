@@ -49,16 +49,26 @@ export async function handleUpload(req, res, db) {
             let saveFileName = '';
             let postId = '';
             let newPost = {};
-            try {
 
+
+            try {
                 const bb = busboy({ headers: req.headers });
 
                 bb.on('file', (name, file, info) => {
                     // destructuring the info object to get the filename, encoding and mimeType
                     const { filename, encoding, mimeType } = info;
 
-                    if (mimeType != 'image/png' && mimeType != 'image/jpg' && mimeType != 'image/jpeg') {
-                        throw new Error(`Invalid mime type: ${mimeType}`);
+                    try {
+                        if (mimeType != 'image/png' && mimeType != 'image/jpg' && mimeType != 'image/jpeg') {
+                            let err = new Error(`Invalid mime type: ${mimeType}`);
+                            err.name = 'invalid_image';
+                            throw err;
+                        }
+                    } catch (err) {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.write(JSON.stringify({ 'Error': 'Invalid image. Use png, jpg or jpeg format' }));
+                        res.end();
+                        return;
                     }
 
 
@@ -75,7 +85,6 @@ export async function handleUpload(req, res, db) {
                     saveTo = `./userUploads/${saveFileName}`;
 
                     //remove all invalid filename characters
-
                     // save the file
                     file.pipe(createWriteStream(saveTo));
 
@@ -114,7 +123,8 @@ export async function handleUpload(req, res, db) {
                     await db.collection('posts').insertOne(newPost);
 
                     //redirect to users post
-                    res.writeHead(302, { 'Location': `/${result.username}/content/${postId}` });
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.write(JSON.stringify({ 'Location': `/${result.username}/content/${postId}` }));
                     res.end();
                 });
 
@@ -122,11 +132,13 @@ export async function handleUpload(req, res, db) {
                 req.pipe(bb);
 
             } catch (error) {
-                console.log(error);
+                //Send error message to client
 
-                res.writeHead(501, { 'Content-Type': 'text/plain' });
-                res.write('internal server error');
+                res.writeHead(501, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ 'Error': 'Something went wrong' }));
                 res.end();
+
+
             }
         }
     }

@@ -1,12 +1,24 @@
 document.getElementById('formFile').addEventListener('change', (e) => {
-    console.log(e.target.files);
     document.getElementById('frame').src = URL.createObjectURL(e.target.files[0]);
 });
 
-document.getElementById('submit').onsubmit = (e) => {
+document.getElementById('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    if (document.getElementById('frame').src = "") {
-        alert('you have to upload an image');
-        return false;
+    let formData = new FormData(e.target);
+
+    await fetch('/upload', {
+        method: 'POST',
+        body: formData
+    }).then(respone => respone.json())
+        .then(respone => handleResponse(respone))
+        .catch(err => console.log(err));
+});
+
+function handleResponse(res) {
+    if (res.Location) {
+        window.location.replace(res.Location);
+    } else {
+        alert(res.Error);
     }
 }
