@@ -52,7 +52,7 @@ export async function handlePath(req, res, pathSegments, db) {
             //Create post feed for user
             let feed = await handleUserFeed(db, result);
 
-            content = content.replace('%content%', feed);
+            content = content.replace('%content%', '<h1>For you page</h1> ' + feed);
 
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.write(content);

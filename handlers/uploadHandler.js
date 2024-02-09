@@ -79,7 +79,6 @@ export async function handleUpload(req, res, db) {
                     //make filename a valid filename in windows
                     let tmpFilename = filename;
                     tmpFilename = tmpFilename.replace(/[ &\/\\#,+()$~%'":*?<>{}]/g, '');
-                    console.log(tmpFilename);
                     saveFileName = `${Date.now()}_${tmpFilename.trim()}`;
 
                     saveTo = `./userUploads/${saveFileName}`;
@@ -88,13 +87,10 @@ export async function handleUpload(req, res, db) {
                     // save the file
                     file.pipe(createWriteStream(saveTo));
 
-                    file.on('close', () => {
-                        console.log(`File [${name}] done`);
-                    });
+                    
                 });
 
                 bb.on('field', (name, val, info) => {
-                    console.log(`Field [${name}]: value: `, val);
                     imageText = val;
                 });
 

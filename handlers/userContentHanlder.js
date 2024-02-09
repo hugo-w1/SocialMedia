@@ -45,13 +45,13 @@ export async function handleUserContent(req, res, db, pathSegments, result) {
 
 
             //check if user has liked this post
-            console.log(clientDB.username);
-            if (content.likes.includes(clientDB.username)) {
-                userContentPage = userContentPage.replace('%user_liked%', 'true');
-            } else {
-                userContentPage = userContentPage.replace('%user_liked%', 'false');
+            if (clientDB) {
+                if (content.likes.includes(clientDB.username)) {
+                    userContentPage = userContentPage.replace('%user_liked%', 'true');
+                } else {
+                    userContentPage = userContentPage.replace('%user_liked%', 'false');
+                }
             }
-
             userContentPage = userContentPage.replace('%content_image%', `/${content.image}`);
             userContentPage = userContentPage.replace('%content_text%', content.text);
 
